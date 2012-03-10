@@ -6,10 +6,11 @@
 #include "libtcod.hpp"
 #include "board.h"
 #include <stdio.h>
+#include <iostream>
 
 #define GAME_SCREEN_WIDTH 40
 #define GAME_SCREEN_HEIGHT 40
-#define GAME_SCREEN_X 39 
+#define GAME_SCREEN_X 19 
 #define GAME_SCREEN_Y 1
 #define COLOR_LIST_Y 5
 
@@ -54,14 +55,18 @@ void render()
     TCODConsole::blit(&gameConsole,0,0,GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT,
             TCODConsole::root,GAME_SCREEN_X,GAME_SCREEN_Y);
 }
-void update(){}
+void update()
+{
+
+}
 
 int main(int argc, char** argv)
 {
-    TCODConsole::initRoot(80,50,"Flood It", false, TCOD_RENDERER_SDL); 
+    TCODConsole::initRoot(60, 45,"Flood It", false, TCOD_RENDERER_SDL); 
     TCODConsole::root->setAlignment(TCOD_CENTER);
     TCOD_key_t k = {TCODK_NONE,0};
     TCOD_mouse_t mouse;
+
     init();
 
     while(!TCODConsole::isWindowClosed())
@@ -69,7 +74,21 @@ int main(int argc, char** argv)
         render();
         TCODConsole::flush();
         //TODO:Do we want to wait?
-        TCODSystem::checkForEvent((TCOD_event_t)TCOD_EVENT_KEY_PRESS,&k,&mouse);
+        TCODSystem::checkForEvent((TCOD_event_t)TCOD_EVENT_KEY_PRESS|TCOD_EVENT_MOUSE,&k,&mouse);
+        if(mouse.lbutton_pressed)
+        {
+            for(int i=0; i < gamecolors.size(); i++)
+            {
+                if(mouse.cx > 1 && mouse.cx <= 3)
+                    if(mouse.cy == COLOR_LIST_Y+(i*5) ||
+                       mouse.cy == COLOR_LIST_Y+(i*5)+1)
+                    {
+                        gameboard->updateBoard(gamecolors[i]);
+                        gamegrid = gameboard->getGrid();
+                    }
+            }
+        }
+            
     }
     return 0;
 }
