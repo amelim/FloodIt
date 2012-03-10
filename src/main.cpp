@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <iostream>
 
-#define GAME_SCREEN_WIDTH 40
-#define GAME_SCREEN_HEIGHT 40
+#define GAME_SCREEN_WIDTH 10
+#define GAME_SCREEN_HEIGHT 10
 #define GAME_SCREEN_X 19 
 #define GAME_SCREEN_Y 1
 #define COLOR_LIST_Y 5

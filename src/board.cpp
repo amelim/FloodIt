@@ -8,8 +8,8 @@ Board::Board()
     //Xy offsets from top left corner of the board
     x = 19;
     y = 1;
-    width = 40;
-    height = 40;
+    width = 10;
+    height = 10;
     k = 3;
     colors.push_back(TCODColor::red);
     colors.push_back(TCODColor::blue);
@@ -38,42 +38,86 @@ void Board::updateBoard(TCODColor c)
     for(int i = 0; i < width; i++)
         for(int j = 0; j < height; j++)
         {
-            if(j==0 && i > 0)
+            //Edge case 1 Top Edge
+            if(j==0 && i > 0 && i < (width-1))
+            {
                 if(flags[i-1][j] == true || flags[i+1][j] == true || flags[i][j+1] == true)
-                    if(grid[i][j] == old)
-                    {
-                        grid[i][j] = c;
-                        flags[i][j] = true;
-                    }
-            else if(i==0 && j > 0)
-                if(flags[i][j-1] == true || flags[i][j+1] == true || flags[i+1][j] == true) 
                     if(grid[i][j]==old)
                     {
                         grid[i][j] = c;
                         flags[i][j] = true;
                     }
-            else if(j == height-1)
-                if(flags[i-1][j] == true || flags[i+1][j] == true || flags[i][j-1] == true) 
+            }
+            //Edge case 2 Left Edge
+            else if(i==0 && j > 0 && j < (height-1))
+            {
+                if(flags[i][j-1] == true || flags[i+1][j] == true || flags[i][j+1] == true)
                     if(grid[i][j]==old)
                     {
                         grid[i][j] = c;
                         flags[i][j] = true;
                     }
-            else if(i == width-1)
-                if(flags[i][j-1] == true || flags[i][j+1] == true || flags[i-1][j] == true) 
+            }
+            //Edge case 3 Bottom Edge
+            else if(j==(height-1) && i > 0 && i < (width-1))
+            {
+                if(flags[i][j-1] == true || flags[i+1][j] == true || flags[i-1][j] == true)
                     if(grid[i][j]==old)
                     {
                         grid[i][j] = c;
                         flags[i][j] = true;
                     }
-            else if(i == 0 && j == 0){}
+            }
+            //Edge case 4 Right Edge
+            else if(i==(width-1) && j > 0 && j < (height -1))
+            {
+                if(flags[i][j-1] == true || flags[i-1][j] == true || flags[i][j+1] == true)
+                    if(grid[i][j]==old)
+                    {
+                        grid[i][j] = c;
+                        flags[i][j] = true;
+                    }
+            }
+            //Corner case 1 Top Right
+            else if(i==(width-1) && j == 0)
+            {
+                if(flags[i][j+1] == true || flags[i-1][j] == true)
+                    if(grid[i][j]==old)
+                    {
+                        grid[i][j] = c;
+                        flags[i][j] = true;
+                    }
+            }
+            //Corner case 2 Bottom Left
+            else if(i==0 && j==(height -1))
+            {
+                if(flags[i][j-1] == true || flags[i+1][j] == true)
+                    if(grid[i][j]==old)
+                    {
+                        grid[i][j] = c;
+                        flags[i][j] = true;
+                    }
+            }
+            //Corner case 3 Bottom Right
+            else if(i==(width-1) && j==(height -1))
+            {
+                if(flags[i][j-1] == true || flags[i-1][j] == true)
+                    if(grid[i][j]==old)
+                    {
+                        grid[i][j] = c;
+                        flags[i][j] = true;
+                    }
+            }
+            //Corner case 4
+            else if(j==0 && i==0) {}
             else
-                if(flags[i-1][j] == true || flags[i][j-1] == true
-                        || flags[i+1][j] == true || flags[i][j+1] == true)
+            {
+                if(flags[i-1][j] == true || flags[i][j-1] == true || flags[i+1][j] == true || flags[i][j+1] == true)
                     if(grid[i][j]==old)
                     {
                         grid[i][j] = c;
                         flags[i][j] = true;
                     }
+            }
         }
 }
