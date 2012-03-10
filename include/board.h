@@ -23,4 +23,5 @@ class Board
         int getHeight() { return height; }
         vector<vector<TCODColor> > getGrid() { return grid; }
         vector<TCODColor> getColors() { return colors; }
+        void updateBoard(TCODColor c);
 };
