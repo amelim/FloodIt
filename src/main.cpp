@@ -14,24 +14,30 @@
 #define GAME_SCREEN_Y 1
 #define COLOR_LIST_Y 5
 
+#define DEBUG 1
+
 //This is the console which will render the game board
 //TODO: Width and Height are defined by the game board size
 TCODConsole gameConsole(GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT);
 Board* gameboard;
 vector<vector<TCODColor> > gamegrid;
+vector<vector<bool> > gameactive;
 vector<TCODColor> gamecolors;
 int width, height;
+bool victory;
 
 
 void init()
 {
+    victory = false;
     gameboard = new Board();
     gamegrid = gameboard->getGrid();
     width = gameboard->getWidth();
     height = gameboard->getHeight();
     gamecolors = gameboard->getColors();
+    gameactive = gameboard->getActive();
 
-    gameConsole.setDefaultBackground(TCODColor::red);
+    gameConsole.setDefaultBackground(TCODColor::black);
 }
 void render()
 {
@@ -40,7 +46,14 @@ void render()
     //Render the board to the gameconsole
     for(int i=0; i < width; i++)
         for(int j=0; j < height; j++)
+        {
             gameConsole.setCharBackground(i, j, gamegrid[i][j]);
+            if(DEBUG)
+            {
+                gameConsole.setCharForeground(i,j,TCODColor::black);
+                gameConsole.setChar(i,j,gameactive[i][j]);
+            }
+        }
 
     //Render the color options to the root console
     TCODConsole::root->print(5, 2, "Colors");
@@ -57,7 +70,8 @@ void render()
 }
 void update()
 {
-
+    gamegrid = gameboard->getGrid();
+    gameactive = gameboard->getActive();
 }
 
 int main(int argc, char** argv)
@@ -73,7 +87,6 @@ int main(int argc, char** argv)
     {
         render();
         TCODConsole::flush();
-        //TODO:Do we want to wait?
         TCODSystem::checkForEvent((TCOD_event_t)TCOD_EVENT_KEY_PRESS|TCOD_EVENT_MOUSE,&k,&mouse);
         if(mouse.lbutton_pressed)
         {
@@ -84,9 +97,15 @@ int main(int argc, char** argv)
                        mouse.cy == COLOR_LIST_Y+(i*5)+1)
                     {
                         gameboard->updateBoard(gamecolors[i]);
-                        gamegrid = gameboard->getGrid();
+                        update();
+                        victory = gameboard->checkVictory();
                     }
             }
+        }
+        if(victory)
+        {
+            cout << "VICTORY!" << endl;
+            return 1;
         }
             
     }

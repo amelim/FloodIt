@@ -13,6 +13,8 @@ class Board
 
         vector<TCODColor> colors;
         vector<vector<TCODColor> > grid;
+        //Tiles which are now officially active
+        vector<vector<bool> > active;
     public:
         //Default Constructor
         Board();
@@ -22,6 +24,8 @@ class Board
         int getWidth() { return width; }
         int getHeight() { return height; }
         vector<vector<TCODColor> > getGrid() { return grid; }
+        vector<vector<bool> > getActive() { return active; }
         vector<TCODColor> getColors() { return colors; }
         void updateBoard(TCODColor c);
+        bool checkVictory();
 };
