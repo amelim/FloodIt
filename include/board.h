@@ -17,6 +17,9 @@ class Board
         //Number of colors available;
         int k;
 
+        //Shorthand way to refer to a tile
+        typedef std::pair<int, int> tile;
+
         //Our Discrete FactorGraph
         ColorCSP csp;
         //Ordering
@@ -26,10 +29,10 @@ class Board
 
         vector<TCODColor> colors;
         vector<vector<TCODColor> > grid;
-        //Tiles which are now officially active
-        vector<vector<bool> > active;
+        vector<vector<tile> > graph;
 
         void buildGraph();
+        int** buildEdgeMatrix();
 
     public:
         //Default Constructor
@@ -40,8 +43,8 @@ class Board
         int getWidth() { return width; }
         int getHeight() { return height; }
         vector<vector<TCODColor> > getGrid() { return grid; }
-        vector<vector<bool> > getActive() { return active; }
         vector<TCODColor> getColors() { return colors; }
+        vector<vector<tile> > getGraph() { return graph; }
         void updateBoard(TCODColor c);
         bool checkVictory();
 };

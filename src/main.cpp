@@ -14,17 +14,21 @@
 #define GAME_SCREEN_Y 1
 #define COLOR_LIST_Y 5
 
-#define DEBUG 0 
+#define DEBUG 1 
+
+//Typedefs
+typedef std::pair<int, int> tile;
 
 //This is the console which will render the game board
 //TODO: Width and Height are defined by the game board size
 TCODConsole gameConsole(GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT);
 Board* gameboard;
 vector<vector<TCODColor> > gamegrid;
-vector<vector<bool> > gameactive;
 vector<TCODColor> gamecolors;
+vector<vector<tile> > gamegraph;
 int width, height;
 bool victory;
+        
 
 
 void init()
@@ -32,12 +36,13 @@ void init()
     victory = false;
     gameboard = new Board();
     gamegrid = gameboard->getGrid();
+    gamegraph = gameboard->getGraph();
     width = gameboard->getWidth();
     height = gameboard->getHeight();
     gamecolors = gameboard->getColors();
-    gameactive = gameboard->getActive();
 
     gameConsole.setDefaultBackground(TCODColor::black);
+    gameConsole.setDefaultForeground(TCODColor::black);
 }
 void render()
 {
@@ -48,12 +53,17 @@ void render()
         for(int j=0; j < height; j++)
         {
             gameConsole.setCharBackground(i, j, gamegrid[i][j]);
-            if(DEBUG)
-            {
-                gameConsole.setCharForeground(i,j,TCODColor::black);
-                gameConsole.setChar(i,j,gameactive[i][j]);
-            }
         }
+            
+    if(DEBUG)
+    {
+        for(int i=0; i<gamegraph.size(); i++)
+            for(int j=0; j<gamegraph[i].size(); j++)
+            {
+                tile t = gamegraph[i][j];
+                gameConsole.setChar(t.first,t.second,i%25 + 65);
+            }
+    }
 
     //Render the color options to the root console
     TCODConsole::root->print(5, 2, "Colors");
@@ -71,7 +81,6 @@ void render()
 void update()
 {
     gamegrid = gameboard->getGrid();
-    gameactive = gameboard->getActive();
 }
 
 int main(int argc, char** argv)

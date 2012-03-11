@@ -14,25 +14,23 @@ Board::Board()
     width = 20;
     height = 20;
     k = 3;
-    colors.push_back(TCODColor::red);
-    colors.push_back(TCODColor::blue);
-    colors.push_back(TCODColor::yellow);
+    colors.push_back(TCODColor::darkSea);
+    colors.push_back(TCODColor::darkMagenta);
+    colors.push_back(TCODColor::darkAzure);
     srand(time(0));
 
     //Find our random colors
     for(int i=0; i<width; i++)
     {
         vector<TCODColor> row;
-        vector<bool> brow;
         for(int j=0; j<height; j++)
         {
            row.push_back(colors[rand() % 3]);
-           brow.push_back(false);
         }
         grid.push_back(row);
-        active.push_back(brow);
     }
-    active[0][0] = true;
+
+    buildGraph();
 }
 
 Board::Board(int x, int y, int w, int h, int k, vector<TCODColor>colors)
@@ -50,35 +48,42 @@ Board::Board(int x, int y, int w, int h, int k, vector<TCODColor>colors)
     for(int i=0; i<width; i++)
     {
         vector<TCODColor> row;
-        vector<bool> brow;
         for(int j=0; j<height; j++)
         {
            row.push_back(colors[rand() % 3]);
-           brow.push_back(false);
         }
         grid.push_back(row);
-        active.push_back(brow);
     }
-    active[0][0] = true;
 
 }
 
 //Private function for building a graph
 void Board::buildGraph()
 {
+
+    //~~~NODE SEARCH~~~//
     bool active[width][height];
     for(int i=0; i<width; i++)
         for(int j=0; j<height; j++)
             active[i][j]=false;
 
-    TCODColor old = TCODColor::black;
+    //Iterate through all tiles and create nodes containing all contiguous color tiles
     for(int i=0; i<width; i++)
         for(int j=0; j<height; j++)
         {
+            vector<tile> node;
+            TCODColor nodecol = grid[i][j];
             list<int> queue;
-            //XY origin
-            queue.push_back(0);
-            queue.push_back(0);
+
+            //We want to skip this tile if it is already part of another node
+            if(!active[i][j])
+            {
+                //XY origin
+                queue.push_back(i);
+                queue.push_back(j);
+                node.push_back(tile(i,j));
+                active[i][j] = true;
+            }
             int curx, cury;
             while(queue.size()!=0)
             {
@@ -92,39 +97,73 @@ void Board::buildGraph()
                 //Check all surrounding tiles and add them if they are the old color
                 //left check
                 if(curx > 0)
-                   if(grid[curx-1][cury] == old && !active[curx-1][cury]) 
+                   if(grid[curx-1][cury] == nodecol && !active[curx-1][cury]) 
                     {
                         queue.push_back(curx-1);
                         queue.push_back(cury);
                         active[curx-1][cury]=true;
+                        node.push_back(tile(curx-1,cury));
                     }
                 //right check
                 if(curx < width-1)
-                    if(grid[curx+1][cury] == old && !active[curx+1][cury])
+                    if(grid[curx+1][cury] == nodecol && !active[curx+1][cury])
                     {
                         queue.push_back(curx+1);
                         queue.push_back(cury);
                         active[curx+1][cury]=true;
+                        node.push_back(tile(curx+1,cury));
                     }
 
                 //downcheck
                 if(cury < height-1)
-                    if(grid[curx][cury+1] == old && !active[curx][cury+1])
+                    if(grid[curx][cury+1] == nodecol && !active[curx][cury+1])
                     {
                         queue.push_back(curx);
                         queue.push_back(cury+1);
                         active[curx][cury+1]=true;
+                        node.push_back(tile(curx,cury+1));
                     }
                 //up check
                 if(cury > 0)
-                    if(grid[curx][cury-1] == old && !active[curx][cury-1])
+                    if(grid[curx][cury-1] == nodecol && !active[curx][cury-1])
                     {
                         queue.push_back(curx);
                         queue.push_back(cury-1);
                         active[curx][cury-1]=true;
+                        node.push_back(tile(curx,cury-1));
                     }
             }
+            //Remove any remaining nodes
+            //queue.clear();
+            graph.push_back(node);
+
         }
+
+    //~~~EDGE CREATION~~~//
+    int **adjMatrix = buildEdgeMatrix();
+
+    //~~~DISCRETE FACTOR GRAPH CREATION~~~//
+    for(int i=0; i<graph.size(); i++)
+        for(int j=0; j<graph[i].size(); j++)
+        {
+            tile t = graph[i][j];
+            //Print graph to sanity check
+            cout << "Node: " << i << " with tile: " << t.first << "," << t.second << endl;
+
+            //Create the factor graph
+            //Discrete key ID is node ID
+            //k is the size of the domain (number of colors)
+            //DiscreteKey key(i,k);
+            //insert(ordering)(i, grid[t.first][t.second]);
+        }
+}
+
+//Input: 2D vector of int pairs
+//Output: nxn adjacency matrix 
+int **Board::buildEdgeMatrix()
+{
+    int adjM[width][height];
+
 }
 
 bool Board::checkVictory()
