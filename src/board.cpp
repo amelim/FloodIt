@@ -63,6 +63,70 @@ Board::Board(int x, int y, int w, int h, int k, vector<TCODColor>colors)
 
 }
 
+//Private function for building a graph
+void Board::buildGraph()
+{
+    bool active[width][height];
+    for(int i=0; i<width; i++)
+        for(int j=0; j<height; j++)
+            active[i][j]=false;
+
+    TCODColor old = TCODColor::black;
+    for(int i=0; i<width; i++)
+        for(int j=0; j<height; j++)
+        {
+            list<int> queue;
+            //XY origin
+            queue.push_back(0);
+            queue.push_back(0);
+            int curx, cury;
+            while(queue.size()!=0)
+            {
+
+                //Dequeue the next tile
+                curx = queue.front();
+                queue.pop_front();
+                cury = queue.front();
+                queue.pop_front();
+
+                //Check all surrounding tiles and add them if they are the old color
+                //left check
+                if(curx > 0)
+                   if(grid[curx-1][cury] == old && !active[curx-1][cury]) 
+                    {
+                        queue.push_back(curx-1);
+                        queue.push_back(cury);
+                        active[curx-1][cury]=true;
+                    }
+                //right check
+                if(curx < width-1)
+                    if(grid[curx+1][cury] == old && !active[curx+1][cury])
+                    {
+                        queue.push_back(curx+1);
+                        queue.push_back(cury);
+                        active[curx+1][cury]=true;
+                    }
+
+                //downcheck
+                if(cury < height-1)
+                    if(grid[curx][cury+1] == old && !active[curx][cury+1])
+                    {
+                        queue.push_back(curx);
+                        queue.push_back(cury+1);
+                        active[curx][cury+1]=true;
+                    }
+                //up check
+                if(cury > 0)
+                    if(grid[curx][cury-1] == old && !active[curx][cury-1])
+                    {
+                        queue.push_back(curx);
+                        queue.push_back(cury-1);
+                        active[curx][cury-1]=true;
+                    }
+            }
+        }
+}
+
 bool Board::checkVictory()
 {
     TCODColor vcolor = grid[0][0];

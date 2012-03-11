@@ -19,10 +19,18 @@ class Board
 
         //Our Discrete FactorGraph
         ColorCSP csp;
+        //Ordering
+        KeyOrdering ordering;
+        //Discrete Values structure
+        ColorCSP::Values values;
+
         vector<TCODColor> colors;
         vector<vector<TCODColor> > grid;
         //Tiles which are now officially active
         vector<vector<bool> > active;
+
+        void buildGraph();
+
     public:
         //Default Constructor
         Board();
