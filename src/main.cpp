@@ -8,13 +8,13 @@
 #include <stdio.h>
 #include <iostream>
 
-#define GAME_SCREEN_WIDTH 10
-#define GAME_SCREEN_HEIGHT 10
+#define GAME_SCREEN_WIDTH 20
+#define GAME_SCREEN_HEIGHT 20
 #define GAME_SCREEN_X 19 
 #define GAME_SCREEN_Y 1
 #define COLOR_LIST_Y 5
 
-#define DEBUG 1
+#define DEBUG 0 
 
 //This is the console which will render the game board
 //TODO: Width and Height are defined by the game board size

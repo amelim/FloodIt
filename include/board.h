@@ -1,6 +1,12 @@
+#pragma once
+
 #include "libtcod.hpp"
+#include "ColorCSP.h"
 #include <vector>
+
 using namespace std;
+using namespace gtsam;
+
 class Board
 {
     protected:
@@ -11,6 +17,8 @@ class Board
         //Number of colors available;
         int k;
 
+        //Our Discrete FactorGraph
+        ColorCSP csp;
         vector<TCODColor> colors;
         vector<vector<TCODColor> > grid;
         //Tiles which are now officially active
@@ -18,7 +26,7 @@ class Board
     public:
         //Default Constructor
         Board();
-        Board(int x, int y, int w, int h, int k);
+        Board(int x, int y, int w, int h, int k, vector<TCODColor> colors);
         int getX() { return x; }
         int getY() { return y; }
         int getWidth() { return width; }

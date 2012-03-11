@@ -11,8 +11,8 @@ Board::Board()
     //Xy offsets from top left corner of the board
     x = 19;
     y = 1;
-    width = 10;
-    height = 10;
+    width = 20;
+    height = 20;
     k = 3;
     colors.push_back(TCODColor::red);
     colors.push_back(TCODColor::blue);
@@ -33,6 +33,34 @@ Board::Board()
         active.push_back(brow);
     }
     active[0][0] = true;
+}
+
+Board::Board(int x, int y, int w, int h, int k, vector<TCODColor>colors)
+{
+    this->x = x;
+    this->y = y;
+    width = w;
+    height = h;
+    this->k = k;
+    this->colors = colors;
+    
+    srand(time(0));
+
+    //Find our random colors
+    for(int i=0; i<width; i++)
+    {
+        vector<TCODColor> row;
+        vector<bool> brow;
+        for(int j=0; j<height; j++)
+        {
+           row.push_back(colors[rand() % 3]);
+           brow.push_back(false);
+        }
+        grid.push_back(row);
+        active.push_back(brow);
+    }
+    active[0][0] = true;
+
 }
 
 bool Board::checkVictory()
@@ -131,96 +159,3 @@ void Board::updateBoard(TCODColor c)
             }
     }
 }
-
-/*
-void Board::updateBoard(TCODColor c)
-{
-    TCODColor old = grid[0][0];
-
-    grid[0][0] = c;
-    for(int i = 0; i < width; i++)
-        for(int j = 0; j < height; j++)
-        {
-            //Edge case 1 Top Edge
-            if(j==0 && i > 0 && i < (width-1))
-            {
-                if(active[i-1][j] == true || active[i+1][j] == true || active[i][j+1] == true)
-                    if(grid[i][j]==old)
-                    {
-                        grid[i][j] = c;
-                        active[i][j] = true;
-                    }
-            }
-            //Edge case 2 Left Edge
-            else if(i==0 && j > 0 && j < (height-1))
-            {
-                if(active[i][j-1] == true || active[i+1][j] == true || active[i][j+1] == true)
-                    if(grid[i][j]==old)
-                    {
-                        grid[i][j] = c;
-                        active[i][j] = true;
-                    }
-            }
-            //Edge case 3 Bottom Edge
-            else if(j==(height-1) && i > 0 && i < (width-1))
-            {
-                if(active[i][j-1] == true || active[i+1][j] == true || active[i-1][j] == true)
-                    if(grid[i][j]==old)
-                    {
-                        grid[i][j] = c;
-                        active[i][j] = true;
-                    }
-            }
-            //Edge case 4 Right Edge
-            else if(i==(width-1) && j > 0 && j < (height -1))
-            {
-                if(active[i][j-1] == true || active[i-1][j] == true || active[i][j+1] == true)
-                    if(grid[i][j]==old)
-                    {
-                        grid[i][j] = c;
-                        active[i][j] = true;
-                    }
-            }
-            //Corner case 1 Top Right
-            else if(i==(width-1) && j == 0)
-            {
-                if(active[i][j+1] == true || active[i-1][j] == true)
-                    if(grid[i][j]==old)
-                    {
-                        grid[i][j] = c;
-                        active[i][j] = true;
-                    }
-            }
-            //Corner case 2 Bottom Left
-            else if(i==0 && j==(height -1))
-            {
-                if(active[i][j-1] == true || active[i+1][j] == true)
-                    if(grid[i][j]==old)
-                    {
-                        grid[i][j] = c;
-                        active[i][j] = true;
-                    }
-            }
-            //Corner case 3 Bottom Right
-            else if(i==(width-1) && j==(height -1))
-            {
-                if(active[i][j-1] == true || active[i-1][j] == true)
-                    if(grid[i][j]==old)
-                    {
-                        grid[i][j] = c;
-                        active[i][j] = true;
-                    }
-            }
-            //Corner case 4
-            else if(j==0 && i==0) {}
-            else
-            {
-                if(active[i-1][j] == true || active[i][j-1] == true || active[i+1][j] == true || active[i][j+1] == true)
-                    if(grid[i][j]==old)
-                    {
-                        grid[i][j] = c;
-                        active[i][j] = true;
-                    }
-            }
-        }
-}*/
