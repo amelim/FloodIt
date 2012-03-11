@@ -1,6 +1,7 @@
 #include "board.h"
 #include <stdlib.h>
 #include <ctime>
+#include <cmath>
 #include <iostream>
 #include <list>
 
@@ -11,8 +12,8 @@ Board::Board()
     //Xy offsets from top left corner of the board
     x = 19;
     y = 1;
-    width = 20;
-    height = 20;
+    width = 3;
+    height = 3;
     k = 3;
     colors.push_back(TCODColor::darkSea);
     colors.push_back(TCODColor::darkMagenta);
@@ -60,6 +61,7 @@ Board::Board(int x, int y, int w, int h, int k, vector<TCODColor>colors)
 //Private function for building a graph
 void Board::buildGraph()
 {
+
 
     //~~~NODE SEARCH~~~//
     bool active[width][height];
@@ -135,35 +137,79 @@ void Board::buildGraph()
             }
             //Remove any remaining nodes
             //queue.clear();
-            graph.push_back(node);
+            if(node.size() > 0)
+                graph.push_back(node);
 
         }
 
     //~~~EDGE CREATION~~~//
-    int **adjMatrix = buildEdgeMatrix();
+    for(int i=0; i<graph.size(); i++)
+    {
+        vector<bool> row;
+        for(int j=0; j<graph.size(); j++)
+        {
+            row.push_back(false);
+        }
+        adjMatrix.push_back(row);
+    }
+           
+    cout << "Number of nodes " << graph.size() << endl;
 
     //~~~DISCRETE FACTOR GRAPH CREATION~~~//
     for(int i=0; i<graph.size(); i++)
+    {
         for(int j=0; j<graph[i].size(); j++)
         {
             tile t = graph[i][j];
             //Print graph to sanity check
-            cout << "Node: " << i << " with tile: " << t.first << "," << t.second << endl;
+            //cout << "Node: " << i << " with tile: " << t.first << "," << t.second << endl;
 
+            //Check all remaining nodes if there are any edges such that x+-1 and y+-1
+            for(int q=i; q<graph.size(); q++)//Remaining nodes
+                for(int p=0; p<graph[q].size(); p++)//Elements of a node
+                {
+                    //cout << "Checking: " << q << p << endl;
+                    tile e = graph[q][p];
+
+                    int x1 = t.first;
+                    int x2 = e.first;
+                    int y1 = t.second;
+                    int y2 = e.second;
+
+                    //If true, there is an edge between node I and node Q
+                    //left check
+                    if(x1 > 0)
+                        if(x1 - 1 == x2 && y1 == y2)
+                            adjMatrix[i][q] = true;
+
+                    //right check
+                    if(x1 < width - 1)
+                        if(x1 + 1 == x2 && y1 == y2)
+                            adjMatrix[i][q] = true;
+
+                    //up check
+                    if(y1 > 0)
+                        if(x1 == x2 && y1 - 1 == y2)
+                            adjMatrix[i][q] = true;
+               
+                    //right check
+                    if(y1 < height - 1)
+                        if(x1 == x2 && y1 + 1 == y2)
+                            adjMatrix[i][q] = true;
+                }
             //Create the factor graph
             //Discrete key ID is node ID
             //k is the size of the domain (number of colors)
             //DiscreteKey key(i,k);
             //insert(ordering)(i, grid[t.first][t.second]);
         }
-}
-
-//Input: 2D vector of int pairs
-//Output: nxn adjacency matrix 
-int **Board::buildEdgeMatrix()
-{
-    int adjM[width][height];
-
+    }
+    
+    
+    for(int i=0; i<graph.size(); i++)
+        for(int j=0; j<graph.size(); j++)
+            if(adjMatrix[i][j] || DEBUG)
+                cout << "Edge between " << i << ":" << j << " " << adjMatrix[i][j] << endl;
 }
 
 bool Board::checkVictory()

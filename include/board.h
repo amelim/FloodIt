@@ -30,9 +30,9 @@ class Board
         vector<TCODColor> colors;
         vector<vector<TCODColor> > grid;
         vector<vector<tile> > graph;
+        vector<vector<bool> > adjMatrix;
 
         void buildGraph();
-        int** buildEdgeMatrix();
 
     public:
         //Default Constructor
