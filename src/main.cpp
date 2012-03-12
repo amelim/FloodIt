@@ -43,6 +43,7 @@ void init()
 
     gameConsole.setDefaultBackground(TCODColor::black);
     gameConsole.setDefaultForeground(TCODColor::black);
+    gameboard->solve();
 }
 void render()
 {

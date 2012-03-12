@@ -1,8 +1,8 @@
 #include "board.h"
 #include <stdlib.h>
-#include <ctime>
 #include <cmath>
 #include <iostream>
+#include <sstream>
 #include <list>
 
 #define DEBUG 0 
@@ -155,14 +155,26 @@ void Board::buildGraph()
            
     cout << "Number of nodes " << graph.size() << endl;
 
+    //Most basic ordering
+    int o = 0;
     //~~~DISCRETE FACTOR GRAPH CREATION~~~//
     for(int i=0; i<graph.size(); i++)
     {
+        ////Create the factor graph
+        //Discrete key ID is node ID
+        //k is the size of the domain (number of colors)
+        stringstream ss;
+        ss << i;
+        DiscreteKey key(ss.str(),k);
+        insert(ordering)(key, o);
+        o++;
+
         for(int j=0; j<graph[i].size(); j++)
         {
             tile t = graph[i][j];
             //Print graph to sanity check
             //cout << "Node: " << i << " with tile: " << t.first << "," << t.second << endl;
+
 
             //Check all remaining nodes if there are any edges such that x+-1 and y+-1
             for(int q=i; q<graph.size(); q++)//Remaining nodes
@@ -197,19 +209,42 @@ void Board::buildGraph()
                         if(x1 == x2 && y1 + 1 == y2)
                             adjMatrix[i][q] = true;
                 }
-            //Create the factor graph
-            //Discrete key ID is node ID
-            //k is the size of the domain (number of colors)
-            //DiscreteKey key(i,k);
-            //insert(ordering)(i, grid[t.first][t.second]);
+
         }
     }
     
     
     for(int i=0; i<graph.size(); i++)
+    {
         for(int j=0; j<graph.size(); j++)
-            if(adjMatrix[i][j] || DEBUG)
+            if(adjMatrix[i][j])
+            {
                 cout << "Edge between " << i << ":" << j << " " << adjMatrix[i][j] << endl;
+                if(i!=j)
+                {
+                    stringstream s1,s2;
+                    s1 << i;
+                    s2 << j;
+                    DiscreteKey key1(s1.str(),k);
+                    DiscreteKey key2(s2.str(),k);
+                    csp.addBinary(key1,key2,ordering);
+                }
+            }
+    }
+    csp.print("Graph");
+}
+
+void Board::solve()
+{
+    ColorCSP::sharedValues mpe = csp.optimalAssignment();
+    for(int i=0; i<graph.size(); i++)
+    {
+        stringstream ss;
+        ss << i;
+        DiscreteKey key(ss.str(),k);
+        cout << 1 + mpe->at(key) << " ";
+    }
+    cout << endl;
 }
 
 bool Board::checkVictory()

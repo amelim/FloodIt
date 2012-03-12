@@ -47,4 +47,5 @@ class Board
         vector<vector<tile> > getGraph() { return graph; }
         void updateBoard(TCODColor c);
         bool checkVictory();
+        void solve();
 };
